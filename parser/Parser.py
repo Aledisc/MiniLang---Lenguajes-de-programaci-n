@@ -134,6 +134,9 @@ class Parser:
         if self.match(TokenType.NUMBER):
             return Literal(self.previous().literal)
 
+        if self.match(TokenType.STRING):
+            return Literal(self.previous().literal)
+
         if self.match(TokenType.IDENTIFIER):
             name_token = self.previous()  # <-- guardar el token IDENTIFIER
             # check assignment: si viene '=', parseamos la expresión de la derecha

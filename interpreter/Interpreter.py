@@ -48,16 +48,35 @@ class Interpreter:
             left = self.evaluate(expr.left)
             right = self.evaluate(expr.right)
             op = expr.operator.type
-            # arithmetic
-            if op == TokenType.PLUS: return left + right
-            if op == TokenType.MINUS: return left - right
-            if op == TokenType.STAR: return left * right
-            if op == TokenType.SLASH: return left / right
-            # comparisons (return booleans)
-            if op == TokenType.GT: return left > right
-            if op == TokenType.LT: return left < right
-            if op == TokenType.GE: return left >= right
-            if op == TokenType.LE: return left <= right
-            if op == TokenType.EQ: return left == right
-            if op == TokenType.NEQ: return left != right
-        raise Exception('Expresión no evaluable') 
+
+            # STRING + STRING → concatenación
+            if op == TokenType.PLUS:
+                if isinstance(left, str) and isinstance(right, str):
+                    return left + right
+                if isinstance(left, (int, float)) and isinstance(right, (int, float)):
+                    return left + right
+                raise Exception("No se pueden sumar string y número. Usa solo strings o solo números.")
+
+            # STRING no soporta -, *, /
+            if op in (TokenType.MINUS, TokenType.STAR, TokenType.SLASH):
+                if isinstance(left, str) or isinstance(right, str):
+                    raise Exception("No se pueden aplicar operadores aritméticos a strings.")
+                if op == TokenType.MINUS: return left - right
+                if op == TokenType.STAR: return left * right
+                if op == TokenType.SLASH: return left / right
+
+            # Comparaciones
+            if op in (TokenType.GT, TokenType.LT, TokenType.GE, TokenType.LE):
+                if isinstance(left, str) or isinstance(right, str):
+                    raise Exception("Comparación inválida entre strings y números.")
+                if op == TokenType.GT: return left > right
+                if op == TokenType.LT: return left < right
+                if op == TokenType.GE: return left >= right
+                if op == TokenType.LE: return left <= right
+
+            if op == TokenType.EQ:
+                return left == right
+            if op == TokenType.NEQ:
+                return left != right
+
+

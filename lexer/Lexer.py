@@ -54,6 +54,10 @@ class Lexer:
 
     def scan_token(self):
         c = self.advance()
+        if c == '"':
+            self.string()
+            return
+
         if c in ' \r\t':
             return
         if c == '\n':
@@ -112,3 +116,16 @@ class Lexer:
         text = self.source[self.start:self.current]
         ttype = self.keywords.get(text, TokenType.IDENTIFIER)
         self.tokens.append(Token(ttype, text, None, self.line))
+
+    def string(self):
+        value = ""
+        while not self.is_at_end() and self.peek() != '"':
+            if self.peek() == '\n':
+                self.line += 1
+            value += self.advance()
+        if self.is_at_end():
+            raise LangError(f"String sin cerrar en la línea {self.line}")
+
+        self.advance()  # cerrar comillas
+        self.add_token(TokenType.STRING, value)
+

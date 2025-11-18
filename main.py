@@ -12,16 +12,27 @@ inicio
         imprimir(b);
     fin_si
     b = b - 1;
-    imprimir(b)
+    imprimir(b);
+    c = a + b;
+    imprimir(c);
+    imprimir(d);
+    c = "ya manejo strings";
+    imprimir(c);
+    imprimir("hola mundo como estas");
+    imprimir("hola" + "amigo");
+    imprimir("esta es una prueba de la exposicion de avance");
+    imprimir("asi concluye " + "nuestra presentacion");
 fin
 '''
+
+
 
 def run_source(src):
     lexer = Lexer(src)
     tokens = lexer.scan_tokens()
     # print('TOKENS:', tokens)
     parser = Parser(tokens)
-    program = parser.parse()  # list of statements
+    program = parser.parse()  # que hubo parse
     interpreter = Interpreter()
     interpreter.interpret(program)
 

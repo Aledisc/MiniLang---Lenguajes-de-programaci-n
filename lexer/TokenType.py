@@ -22,6 +22,7 @@ class TokenType(Enum):
     # Literals
     IDENTIFIER = 'IDENTIFIER'
     NUMBER = 'NUMBER'
+    STRING = 'STRING'
 
     # Keywords (spanish)
     INICIO = 'INICIO'
@@ -32,3 +33,4 @@ class TokenType(Enum):
     IMPRIMIR = 'IMPRIMIR'
 
     EOF = 'EOF'
+
