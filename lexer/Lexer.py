@@ -17,6 +17,9 @@ class Lexer:
             'entonces': TokenType.ENTONCES,
             'fin_si': TokenType.FIN_SI,
             'imprimir': TokenType.IMPRIMIR,
+            "func": TokenType.FUNC,
+            "return": TokenType.RETURN,
+
         }
 
     def is_at_end(self):
@@ -100,6 +103,13 @@ class Lexer:
             if self.match('='):
                 self.add_token(TokenType.LE); return
             self.add_token(TokenType.LT); return
+        if c == '{':
+            self.add_token(TokenType.LLAVE_IZQ); return
+        if c == '}':
+            self.add_token(TokenType.LLAVE_DER); return
+        if c == ',':
+            self.add_token(TokenType.COMMA); return
+
         # Unknown char
         raise LangError(f"Unexpected character '{c}' at line {self.line}")
 

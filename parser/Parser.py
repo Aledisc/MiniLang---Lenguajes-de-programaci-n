@@ -48,14 +48,24 @@ class Parser:
         return stmts
 
     def declaration(self):
-        # In this simple language, declarations are either statements
+        if self.match(TokenType.FUNC):
+            return self.function_decl()
         return self.statement()
 
     def statement(self):
+        if self.match(TokenType.FUNC):
+            return self.function_decl()
         if self.match(TokenType.IMPRIMIR):
             return self.print_stmt()
         if self.match(TokenType.SI):
             return self.if_stmt()
+        if self.match(TokenType.RETURN):
+            value = None
+            if not self.check(TokenType.SEMICOLON):
+                value = self.expression()
+            self.consume(TokenType.SEMICOLON, "Falta ';'")
+            return ReturnStmt(value)
+
         return self.expr_stmt()
 
     def print_stmt(self):
@@ -138,12 +148,22 @@ class Parser:
             return Literal(self.previous().literal)
 
         if self.match(TokenType.IDENTIFIER):
-            name_token = self.previous()  # <-- guardar el token IDENTIFIER
-            # check assignment: si viene '=', parseamos la expresión de la derecha
+            name = self.previous()
+
+            if self.match(TokenType.LPAREN):
+                args = []
+                if not self.check(TokenType.RPAREN):
+                    args.append(self.expression())
+                    while self.match(TokenType.COMMA):
+                        args.append(self.expression())
+                self.consume(TokenType.RPAREN, "Se esperaba ')'")
+                return FunctionCall(name, args)
+
             if self.match(TokenType.ASSIGN):
                 value = self.expression()
-                return Assign(name_token, value)  # <-- usar name_token, no self.previous()
-            return Variable(name_token)
+                return Assign(name, value)
+
+            return Variable(name)
 
         if self.match(TokenType.LPAREN):
             expr = self.expression()
@@ -151,4 +171,26 @@ class Parser:
             return expr
 
         raise LangError('Se esperaba una expresión válida.')
+
+    def function_decl(self):
+        name = self.consume(TokenType.IDENTIFIER, "Se esperaba nombre de función.")
+
+        self.consume(TokenType.LPAREN, "Se esperaba '('")
+        params = []
+
+        if not self.check(TokenType.RPAREN):
+            params.append(self.consume(TokenType.IDENTIFIER, "Parámetro esperado"))
+            while self.match(TokenType.COMMA):
+                params.append(self.consume(TokenType.IDENTIFIER, "Parámetro esperado"))
+
+        self.consume(TokenType.RPAREN, "Se esperaba ')'")
+        self.consume(TokenType.LLAVE_IZQ, "Se esperaba '{'")
+
+        body = []
+        while not self.check(TokenType.LLAVE_DER):
+            body.append(self.declaration())
+
+        self.consume(TokenType.LLAVE_DER, "Se esperaba '}'")
+
+        return FunctionDecl(name, params, body)
 

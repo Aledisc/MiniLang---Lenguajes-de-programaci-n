@@ -36,3 +36,19 @@ class IfStmt(Stmt):
     def __init__(self, condition, then_branch):
         self.condition = condition
         self.then_branch = then_branch
+
+class FunctionDecl:
+    def __init__(self, name, params, body):
+        self.name = name      # Token
+        self.params = params  # List[Token]
+        self.body = body      # List[Stmt]
+
+class FunctionCall:
+    def __init__(self, name, args):
+        self.name = name      # Token
+        self.args = args      # List[Expr]
+
+class ReturnStmt:
+    def __init__(self, value):
+        self.value = value    # Expr
+

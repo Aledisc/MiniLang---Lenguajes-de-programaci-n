@@ -1,15 +1,24 @@
 from parser.AST import *
 from lexer.TokenType import TokenType
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+
 
 class Interpreter:
     def __init__(self):
         self.env = __import__('interpreter.Environment', fromlist=['Environment']).Environment()
+        self.functions = {}
 
     def interpret(self, statements):
         for s in statements:
             self.execute(s)
 
     def execute(self, stmt):
+        if isinstance(stmt, FunctionDecl):
+            self.functions[stmt.name.lexeme] = stmt
+            return
+
         if isinstance(stmt, list):
             for st in stmt:
                 self.execute(st)
@@ -32,7 +41,19 @@ class Interpreter:
                     self.execute(inner)
             return
         # expression-stmt fallback: evaluate expression (useful for side effects)
+        if isinstance(stmt, ReturnStmt):
+            value = None
+            if stmt.value:
+                value = self.evaluate(stmt.value)
+            raise ReturnException(value)
+
         self.evaluate(stmt)
+        if isinstance(stmt, FunctionDecl):
+            self.functions[stmt.name.lexeme] = stmt
+            return
+
+        if isinstance(expr, FunctionCall):
+            return self.call_function(expr)
 
     def evaluate(self, expr):
         if isinstance(expr, Literal):
@@ -79,4 +100,30 @@ class Interpreter:
             if op == TokenType.NEQ:
                 return left != right
 
+        if isinstance(expr, FunctionCall):
+            return self.call_function(expr)
 
+    def call_function(self, call):
+        fn = self.functions.get(call.name.lexeme)
+        if not fn:
+            raise Exception("Función no definida")
+
+        if len(call.args) != len(fn.params):
+            raise Exception("Cantidad incorrecta de argumentos")
+
+        prev_env = self.env
+        local_env = self.env.create_child()
+        self.env = local_env
+
+        for param, arg in zip(fn.params, call.args):
+            local_env.define(param.lexeme, self.evaluate(arg))
+
+        try:
+            for stmt in fn.body:
+                self.execute(stmt)
+        except ReturnException as r:
+            self.env = prev_env
+            return r.value
+
+        self.env = prev_env
+        return None

@@ -34,3 +34,11 @@ class TokenType(Enum):
 
     EOF = 'EOF'
 
+    # Functions
+    FUNC = "FUNC"
+    RETURN = "RETURN"
+    LLAVE_IZQ = "{"
+    LLAVE_DER = "}"
+    COMMA = ","
+
+

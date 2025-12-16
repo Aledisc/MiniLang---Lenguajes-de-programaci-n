@@ -4,24 +4,51 @@ from interpreter.Interpreter import Interpreter
 
 sample = '''
 inicio
+    imprimir("====================================");
+    imprimir("        DEMOSTRACION MINILANG        ");
+    imprimir("====================================");
+    imprimir("");
+    imprimir("prueba de variables y expresiones");
+    imprimir("");
+    
     a = 5;
     b = a + 3 * (2 + 1);
+    imprimir("Resultado a:");
     imprimir(a);
+    imprimir("Resultado b:");
     imprimir(b);
+    
+    imprimir("");
+    imprimir(">>Manejo de condicionales");
+    
     si b > 10 entonces
-        imprimir(b);
+        imprimir("b es mayor que 10");
     fin_si
-    b = b - 1;
+    
+    imprimir("");
+    imprimir(">>Prueba de self-assignment with update");
+    imprimir("Imprimiendo b");
     imprimir(b);
-    c = a + b;
+    imprimir("");
+    b = b - 1;
+    imprimir("Resultado de b - 1:");
+    imprimir(b);
+    
+    imprimir("");
+    imprimir(">>Prueba de strings y concatenacion");
+    c = "ya manejo variables tipo string";
     imprimir(c);
-    imprimir(d);
-    c = "ya manejo strings";
-    imprimir(c);
-    imprimir("hola mundo como estas");
-    imprimir("hola" + "amigo");
-    imprimir("esta es una prueba de la exposicion de avance");
-    imprimir("asi concluye " + "nuestra presentacion");
+    imprimir("y puedo imprimir tanto strings simples");
+    imprimir("asi como" + " concatenacion de strings");
+
+    imprimir("");
+    imprimir(">>Prueba de manejo de funciones");
+    imprimir("Definimos suma(x,y), luego hacemos suma(1,2)"); 
+    func suma(x, y) {
+        return x + y;
+    }
+    resultado = suma(1,2);
+    imprimir(resultado);
 fin
 '''
 
